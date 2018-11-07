@@ -135,6 +135,7 @@ function initData (vm: Component) {
     )
   }
   // proxy data on instance
+  // 判断data的key值有没跟props和methods一样的，有的话发出警告
   const keys = Object.keys(data)
   const props = vm.$options.props
   const methods = vm.$options.methods
@@ -155,6 +156,9 @@ function initData (vm: Component) {
         `Use prop default value instead.`,
         vm
       )
+
+    // 判断key的首字符是不是 $ 或 _
+    // 不是将属性代理到 vue 实例中
     } else if (!isReserved(key)) {
 
       // 代理到实例下面
@@ -184,10 +188,12 @@ const computedWatcherOptions = { computed: true }
 // 定义computed属性
 function initComputed (vm: Component, computed: Object) {
   // $flow-disable-line
+  // 创建一个空对象
   const watchers = vm._computedWatchers = Object.create(null)
   // computed properties are just getters during SSR
   const isSSR = isServerRendering()
 
+  // 遍历拿到每个用户定义的computed getter
   for (const key in computed) {
     const userDef = computed[key]
     const getter = typeof userDef === 'function' ? userDef : userDef.get
@@ -200,23 +206,7 @@ function initComputed (vm: Component, computed: Object) {
 
     if (!isSSR) {
       // create internal watcher for the computed property.
-      /**
-      * 熟悉的new Watcher，创建一个订阅者，为了之后收集依赖
-      * 将例子中的num、lastNum和计算属性comNum进行绑定
-      * 也就是说在一个deps中有两个dep，其中的subs分别是
-      * dep1.subs:[watcher(num),watcher(comNum)]
-      * dep2.subs:[watcher(lastNum),watcher(comNum)]
-      * dep3........
-      * 请看前面的例子，页面html中并没有渲染{{lastNum}}；按理说就不会执行lastNum的getter
-      * 从而就不会和计算属性进行关联绑定，如果更改lastNum就不会触发dep2的notify()发布
-      * 自然也就不会在页面看到comNum有所变化，但是运行后却不是这样，为什么呢
-      * 这就引出这个initComputed的下面方法了---依赖收集(watcher.prototype.depend)！
-      * 当时也是看了好久才知道这个depend方法的作用，后面再说
-      * 首先先来提个头，就是下面代码中watcher中这个getter
-      * 其实就是function comNum() {return this.num+"-computed-"+this.lastNum;}}
-      * 而这个getter什么时候执行呢，会在Watcher.prototype.evaluate()方法中执行
-      * 所以watcher中的evaluate()与depend()两个方法都与initComputed相关
-      */
+      // 为每一个 getter 创建一个 computed watcher
       watchers[key] = new Watcher(
         vm,
         getter || noop,

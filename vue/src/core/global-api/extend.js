@@ -19,8 +19,12 @@ export function initExtend (Vue: GlobalAPI) {
   // 构造一个 Vue 的子类
   Vue.extend = function (extendOptions: Object): Function {
     extendOptions = extendOptions || {}
+
+    // this 指向 Vue
     const Super = this
     const SuperId = Super.cid
+
+    // 优化点：将构造器缓存起来，下次再实例直接返回
     const cachedCtors = extendOptions._Ctor || (extendOptions._Ctor = {})
     if (cachedCtors[SuperId]) {
       return cachedCtors[SuperId]
@@ -28,10 +32,13 @@ export function initExtend (Vue: GlobalAPI) {
 
     const name = extendOptions.name || Super.options.name
     if (process.env.NODE_ENV !== 'production' && name) {
+
+      // 校验组件名称：1.不允许是内置标签；2.只能英文开头
       validateComponentName(name)
     }
 
     // 原型继承
+    // 声明子类构造器
     const Sub = function VueComponent (options) {
       this._init(options)
     }
