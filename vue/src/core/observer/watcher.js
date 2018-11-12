@@ -171,6 +171,7 @@ export default class Watcher {
       // It initializes as lazy by default, and only becomes activated when
       // it is depended on by at least one subscriber, which is typically
       // another computed property or a component's render function.
+      // 没有人订阅这个computed watcher的变化，只需要把dirty设置为true，下次有人访问时求值
       if (this.dep.subs.length === 0) {
         // In lazy mode, we don't want to perform computations until necessary,
         // so we simply mark the watcher as dirty. The actual computation is
@@ -181,6 +182,8 @@ export default class Watcher {
         // In activated mode, we want to proactively perform the computation
         // but only notify our subscribers when the value has indeed changed.
         this.getAndInvoke(() => {
+
+          // 派发更新
           this.dep.notify()
         })
       }
@@ -233,9 +236,12 @@ export default class Watcher {
    */
   evaluate () {
     if (this.dirty) {
+      // 这里的get就是computed上的getter函数
       this.value = this.get()
       this.dirty = false
     }
+
+    // 返回getter的值
     return this.value
   }
 
@@ -243,7 +249,11 @@ export default class Watcher {
    * Depend on this watcher. Only for computed property watchers.
    */
   depend () {
+    // Dep.target代表的是渲染watcher
+    // 在计算计算属性时，触发其他响应式的getter，此时Dep.target代表的是computed watcher
     if (this.dep && Dep.target) {
+
+      // 渲染watcher订阅computed watcher的变化
       this.dep.depend()
     }
   }

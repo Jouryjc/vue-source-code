@@ -32,7 +32,16 @@ export const emptyNode = new VNode('', {}, [])
 
 const hooks = ['create', 'activate', 'update', 'remove', 'destroy']
 
+/**
+ * 判断VNode是否一致
+ * @param a
+ * @param b
+ * @returns {boolean|*}
+ */
 function sameVnode (a, b) {
+  // key相等
+  // 标签名、注释、data、input type
+  // 异步节点
   return (
     a.key === b.key && (
       (
@@ -285,7 +294,7 @@ export function createPatchFunction (backend) {
    * dom插入函数
    * @param {*} parent - 父节点
    * @param {*} elm - 子节点
-   * @param {*} ref 
+   * @param {*} ref
    */
   function insert (parent, elm, ref) {
     if (isDef(parent)) {
@@ -721,6 +730,7 @@ export function createPatchFunction (backend) {
       createElm(vnode, insertedVnodeQueue)
     } else {
       const isRealElement = isDef(oldVnode.nodeType)
+
       if (!isRealElement && sameVnode(oldVnode, vnode)) {
         // patch existing root node
         patchVnode(oldVnode, vnode, insertedVnodeQueue, removeOnly)
@@ -749,11 +759,14 @@ export function createPatchFunction (backend) {
           }
           // either not server-rendered, or hydration failed.
           // create an empty node and replace it
+          // 把真实 DOM 转成VNode
           oldVnode = emptyNodeAt(oldVnode)
         }
 
         // replacing existing element
+        // 挂载节点
         const oldElm = oldVnode.elm
+        // 挂载节点的父节点，例子就是body
         const parentElm = nodeOps.parentNode(oldElm)
 
         // create new node

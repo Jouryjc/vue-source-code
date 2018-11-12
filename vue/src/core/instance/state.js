@@ -37,9 +37,9 @@ const sharedPropertyDefinition = {
 
 /**
  * 代理函数，app._data.text -> app.text
- * @param {*} target 
- * @param {*} sourceKey 
- * @param {*} key 
+ * @param {*} target
+ * @param {*} sourceKey
+ * @param {*} key
  */
 
 // proxy(vm, `_props`, key)
@@ -70,6 +70,8 @@ export function initState (vm: Component) {
 }
 
 function initProps (vm: Component, propsOptions: Object) {
+
+  // 获取props的数据
   const propsData = vm.$options.propsData || {}
   const props = vm._props = {}
   // cache prop keys so that future props updates can iterate using Array
@@ -200,23 +202,7 @@ function initComputed (vm: Component, computed: Object) {
 
     if (!isSSR) {
       // create internal watcher for the computed property.
-      /**
-      * 熟悉的new Watcher，创建一个订阅者，为了之后收集依赖
-      * 将例子中的num、lastNum和计算属性comNum进行绑定
-      * 也就是说在一个deps中有两个dep，其中的subs分别是
-      * dep1.subs:[watcher(num),watcher(comNum)]
-      * dep2.subs:[watcher(lastNum),watcher(comNum)]
-      * dep3........
-      * 请看前面的例子，页面html中并没有渲染{{lastNum}}；按理说就不会执行lastNum的getter
-      * 从而就不会和计算属性进行关联绑定，如果更改lastNum就不会触发dep2的notify()发布
-      * 自然也就不会在页面看到comNum有所变化，但是运行后却不是这样，为什么呢
-      * 这就引出这个initComputed的下面方法了---依赖收集(watcher.prototype.depend)！
-      * 当时也是看了好久才知道这个depend方法的作用，后面再说
-      * 首先先来提个头，就是下面代码中watcher中这个getter
-      * 其实就是function comNum() {return this.num+"-computed-"+this.lastNum;}}
-      * 而这个getter什么时候执行呢，会在Watcher.prototype.evaluate()方法中执行
-      * 所以watcher中的evaluate()与depend()两个方法都与initComputed相关
-      */
+      // computed watcher
       watchers[key] = new Watcher(
         vm,
         getter || noop,

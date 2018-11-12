@@ -37,6 +37,9 @@ export function createElement (
   normalizationType: any,
   alwaysNormalize: boolean
 ): VNode | Array<VNode> {
+
+  // 满足data是一个数组或者基础类型时，说明传的是children参数，需要后移一位
+  // 参数个数的统一性处理
   if (Array.isArray(data) || isPrimitive(data)) {
     normalizationType = children
     children = data
@@ -64,11 +67,11 @@ export function _createElement (
   normalizationType?: number
 ): VNode | Array<VNode> {
 
-  /*
-    如果传递data参数且data的__ob__已经定义（代表已经被observed，上面绑定了Oberver对象），
-    https://cn.vuejs.org/v2/guide/render-function.html#约束
-    那么创建一个空节点
-  */
+  /**
+    * 如果传递data参数且data的__ob__已经定义（代表已经被observed，上面绑定了Oberver对象），
+    * https://cn.vuejs.org/v2/guide/render-function.html#约束
+    * 那么创建一个空节点
+    */
   if (isDef(data) && isDef((data: any).__ob__)) {
     process.env.NODE_ENV !== 'production' && warn(
       `Avoid using observed data object as vnode data: ${JSON.stringify(data)}\n` +
@@ -79,6 +82,7 @@ export function _createElement (
   }
 
   // object syntax in v-bind
+  // 用在<component is="...">
   if (isDef(data) && isDef(data.is)) {
     tag = data.is
   }
@@ -109,6 +113,8 @@ export function _createElement (
     data.scopedSlots = { default: children[0] }
     children.length = 0
   }
+
+
   if (normalizationType === ALWAYS_NORMALIZE) {
     children = normalizeChildren(children)
   } else if (normalizationType === SIMPLE_NORMALIZE) {

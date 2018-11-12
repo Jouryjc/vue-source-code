@@ -12,6 +12,8 @@ function flushCallbacks () {
   pending = false
   const copies = callbacks.slice(0)
   callbacks.length = 0
+
+  // 循环调用callbacks函数
   for (let i = 0; i < copies.length; i++) {
     copies[i]()
   }
@@ -78,6 +80,8 @@ if (typeof Promise !== 'undefined' && isNative(Promise)) {
  * Wrap a function so that if any code inside triggers state change,
  * the changes are queued using a (macro) task instead of a microtask.
  */
+// 强制使用宏任务执行
+// 比如对于一些 DOM 交互事件，如 v-on 绑定的事件回调函数的处理，会强制走 macro task
 export function withMacroTask (fn: Function): Function {
   return fn._withTask || (fn._withTask = function () {
     useMacroTask = true
@@ -89,6 +93,8 @@ export function withMacroTask (fn: Function): Function {
 
 export function nextTick (cb?: Function, ctx?: Object) {
   let _resolve
+
+  // 把传入的函数压入callbacks数组
   callbacks.push(() => {
     if (cb) {
       try {
@@ -109,6 +115,7 @@ export function nextTick (cb?: Function, ctx?: Object) {
     }
   }
   // $flow-disable-line
+  // 当nextTick不传函数时，提供一个promise化的调用
   if (!cb && typeof Promise !== 'undefined') {
     return new Promise(resolve => {
       _resolve = resolve
