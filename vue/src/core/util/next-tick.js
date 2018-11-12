@@ -27,6 +27,8 @@ function flushCallbacks () {
 // when state is changed right before repaint (e.g. #6813, out-in transitions).
 // Here we use microtask by default, but expose a way to force (macro) task when
 // needed (e.g. in event handlers attached by v-on).
+
+// 定义宏任务和微任务
 let microTimerFunc
 let macroTimerFunc
 let useMacroTask = false
@@ -36,6 +38,8 @@ let useMacroTask = false
 // in IE. The only polyfill that consistently queues the callback after all DOM
 // events triggered in the same loop is by using MessageChannel.
 /* istanbul ignore if */
+
+// 宏任务和微任务函数的实现
 if (typeof setImmediate !== 'undefined' && isNative(setImmediate)) {
   macroTimerFunc = () => {
     setImmediate(flushCallbacks)
@@ -82,6 +86,7 @@ if (typeof Promise !== 'undefined' && isNative(Promise)) {
  */
 // 强制使用宏任务执行
 // 比如对于一些 DOM 交互事件，如 v-on 绑定的事件回调函数的处理，会强制走 macro task
+// 确保函数执行过程中对数据任意的修改，触发变化执行 nextTick 的时候强制走 macroTimerFunc
 export function withMacroTask (fn: Function): Function {
   return fn._withTask || (fn._withTask = function () {
     useMacroTask = true
@@ -116,6 +121,8 @@ export function nextTick (cb?: Function, ctx?: Object) {
   }
   // $flow-disable-line
   // 当nextTick不传函数时，提供一个promise化的调用
+
+  // 不传cb直接返回一个promise的调用
   if (!cb && typeof Promise !== 'undefined') {
     return new Promise(resolve => {
       _resolve = resolve

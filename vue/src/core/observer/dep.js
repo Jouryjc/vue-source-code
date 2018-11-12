@@ -11,12 +11,14 @@ let uid = 0
  */
 // 收集依赖对象
 export default class Dep {
-  static target: ?Watcher;
+  static target: ?Watcher;  // 静态属性 target，这是一个全局唯一 Watcher
   id: number;
   subs: Array<Watcher>;
 
   constructor () {
     this.id = uid++
+
+    // 用于收集订阅对象
     this.subs = []
   }
 
@@ -50,6 +52,8 @@ Dep.target = null
 const targetStack = []
 
 export function pushTarget (_target: ?Watcher) {
+
+  // Dep.target 赋值为当前的渲染 watcher 并压栈（为了恢复用）
   if (Dep.target) targetStack.push(Dep.target)
   Dep.target = _target
 }

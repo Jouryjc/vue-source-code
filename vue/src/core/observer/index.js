@@ -41,8 +41,13 @@ export class Observer {
 
   constructor (value: any) {
     this.value = value
+
+    // 实例化一个 Dep 对象
     this.dep = new Dep()
     this.vmCount = 0
+
+    // 把自身实例添加到数据对象 value 的 __ob__ 属性上
+    // 定义在 src/core/util/lang.js
     def(value, '__ob__', this)
     if (Array.isArray(value)) {
       const augment = hasProto
@@ -60,6 +65,7 @@ export class Observer {
    * getter/setters. This method should only be called when
    * value type is Object.
    */
+  // 将每个属性转换成 getter/setter，注意函数参数是对象
   walk (obj: Object) {
     const keys = Object.keys(obj)
     for (let i = 0; i < keys.length; i++) {
@@ -71,6 +77,8 @@ export class Observer {
    * Observe a list of Array items.
    */
   observeArray (items: Array<any>) {
+
+    // 遍历数组再次调用 observe
     for (let i = 0, l = items.length; i < l; i++) {
       observe(items[i])
     }
@@ -114,17 +122,17 @@ export function observe (value: any, asRootData: ?boolean): Observer | void {
   }
   let ob: Observer | void
 
-  // 如果有ob，就直接返回
+  // 如果有ob，说明已经是个响应式对象，就直接返回
   if (hasOwn(value, '__ob__') && value.__ob__ instanceof Observer) {
     ob = value.__ob__
 
   // 没有的话实例一个ob对象
   } else if (
-    shouldObserve &&
-    !isServerRendering() &&
-    (Array.isArray(value) || isPlainObject(value)) &&
-    Object.isExtensible(value) &&
-    !value._isVue
+    shouldObserve &&  // 定义的变量，true，在initProps会改变该值
+    !isServerRendering() && // 服务端渲染
+    (Array.isArray(value) || isPlainObject(value)) && // 数组或纯对象
+    Object.isExtensible(value) && // 可扩展
+    !value._isVue // 不是 vue 实例
   ) {
     ob = new Observer(value)
   }
@@ -148,7 +156,10 @@ export function defineReactive (
   /*在闭包内存储一个Dep对象*/
   const dep = new Dep()
 
+  // 拿到 obj 的属性描述符
   const property = Object.getOwnPropertyDescriptor(obj, key)
+
+  // 判断，如果是不能配置的属性，直接终止程序
   if (property && property.configurable === false) {
     return
   }
@@ -160,14 +171,16 @@ export function defineReactive (
     val = obj[key]
   }
 
+  // 对子对象递归调用 observe 方法，这样就保证了无论 obj 的结构多复杂，它的所有子属性也能变成响应式的对象
   let childOb = !shallow && observe(val)
   Object.defineProperty(obj, key, {
     enumerable: true,
     configurable: true,
     get: function reactiveGetter () {
-      // 依赖收集
       const value = getter ? getter.call(obj) : val
       if (Dep.target) {
+
+        // 依赖收集
         dep.depend()
         if (childOb) {
           childOb.dep.depend()
@@ -193,6 +206,8 @@ export function defineReactive (
       } else {
         val = newVal
       }
+
+      // shallow 为 false 的情况，会对新设置的值变成一个响应式对象
       childOb = !shallow && observe(newVal)
       // 通知订阅者
       dep.notify()
@@ -205,6 +220,7 @@ export function defineReactive (
  * triggers change notification if the property doesn't
  * already exist.
  */
+// 当需要给对象添加新属性并触发页面改变时，可以调用set函数
 export function set (target: Array<any> | Object, key: any, val: any): any {
   if (process.env.NODE_ENV !== 'production' &&
     (isUndef(target) || isPrimitive(target))

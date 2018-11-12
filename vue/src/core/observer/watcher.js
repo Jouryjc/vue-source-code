@@ -22,6 +22,14 @@ let uid = 0
  * and fires callback when the expression value changes.
  * This is used for both the $watch() api and directives.
  */
+
+/* new Watcher(vm, updateComponent, noop, {
+    before () {
+      if (vm._isMounted) {
+        callHook(vm, 'beforeUpdate')
+      }
+    }
+  }, true) */
 export default class Watcher {
   vm: Component;
   expression: string;
@@ -68,15 +76,23 @@ export default class Watcher {
     this.id = ++uid // uid for batching
     this.active = true
     this.dirty = this.computed // for computed watchers
+
+    // 跟dep相关的一些属性
+    // 表示 Watcher 实例持有的 Dep 实例的数组
     this.deps = []
     this.newDeps = []
+
+    // 代表 this.deps 和 this.newDeps 的 id Set
     this.depIds = new Set()
     this.newDepIds = new Set()
+
     this.expression = process.env.NODE_ENV !== 'production'
       ? expOrFn.toString()
       : ''
     // parse expression for getter
     if (typeof expOrFn === 'function') {
+
+      // 这里的getter是updateComponent函数
       this.getter = expOrFn
     } else {
       this.getter = parsePath(expOrFn)
@@ -90,10 +106,14 @@ export default class Watcher {
         )
       }
     }
+
+    // computed watcher并不会立刻求值
     if (this.computed) {
       this.value = undefined
       this.dep = new Dep()
     } else {
+
+      // 执行watch的get函数
       this.value = this.get()
     }
   }
@@ -106,6 +126,8 @@ export default class Watcher {
     let value
     const vm = this.vm
     try {
+
+      // this.getter 对应就是 updateComponent 函数
       value = this.getter.call(vm, vm)
     } catch (e) {
       if (this.user) {
@@ -131,6 +153,9 @@ export default class Watcher {
   addDep (dep: Dep) {
     const id = dep.id
     if (!this.newDepIds.has(id)) {
+
+      // 把当前的 watcher 订阅到这个数据持有的 dep 的 subs 中
+      // 这个目的是为后续数据变化时候能通知到哪些 subs 做准备
       this.newDepIds.add(id)
       this.newDeps.push(dep)
       if (!this.depIds.has(id)) {
@@ -220,6 +245,8 @@ export default class Watcher {
       this.dirty = false
       if (this.user) {
         try {
+
+          // 这就是为什么我们写watch时能拿到新值和旧值
           cb.call(this.vm, value, oldValue)
         } catch (e) {
           handleError(e, this.vm, `callback for watcher "${this.expression}"`)
