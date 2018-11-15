@@ -64,8 +64,11 @@ export function initState (vm: Component) {
     observe(vm._data = {}, true /* asRootData */)
   }
   if (opts.computed) initComputed(vm, opts.computed)  // 初始化computed
+
+  // 这个 nativeWatch 定义在 src/core/util/env.js 中
+  // Firefox 在对象原型上有一个 watch 方法，感兴趣的可以去 MDN 了解下
   if (opts.watch && opts.watch !== nativeWatch) {
-    initWatch(vm, opts.watch)
+    initWatch(vm, opts.watch) // 初始化watch
   }
 }
 
@@ -313,7 +316,11 @@ function initMethods (vm: Component, methods: Object) {
 
 function initWatch (vm: Component, watch: Object) {
   for (const key in watch) {
+
+    // 获取属性的处理函数
     const handler = watch[key]
+
+    // 处理函数如果是数组，遍历每个项调用 createWatcher
     if (Array.isArray(handler)) {
       for (let i = 0; i < handler.length; i++) {
         createWatcher(vm, key, handler[i])
@@ -330,10 +337,13 @@ function createWatcher (
   handler: any,
   options?: Object
 ) {
+
+  // handler 是个对象，把对象复制给 options，然后再获取 handler 处理函数
   if (isPlainObject(handler)) {
     options = handler
     handler = handler.handler
   }
+
   if (typeof handler === 'string') {
     handler = vm[handler]
   }
@@ -372,12 +382,20 @@ export function stateMixin (Vue: Class<Component>) {
     options?: Object
   ): Function {
     const vm: Component = this
+
+    // 判断值是对象，接着调用 createWatcher
     if (isPlainObject(cb)) {
       return createWatcher(vm, expOrFn, cb, options)
     }
     options = options || {}
+
+    // 标志是 user watcher
     options.user = true
+
+    // 实例化user watcher
     const watcher = new Watcher(vm, expOrFn, cb, options)
+
+    // 如果 immediate 值为true，立即执行处理函数
     if (options.immediate) {
       cb.call(vm, watcher.value)
     }

@@ -24,6 +24,8 @@ function _traverse (val: any, seen: SimpleSet) {
   }
   if (val.__ob__) {
     const depId = val.__ob__.dep.id
+
+    // 遍历过程中会把子响应式对象通过它们的 dep id 记录到 seenObjects，避免以后重复访问
     if (seen.has(depId)) {
       return
     }

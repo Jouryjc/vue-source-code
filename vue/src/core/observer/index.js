@@ -177,6 +177,8 @@ export function defineReactive (
     enumerable: true,
     configurable: true,
     get: function reactiveGetter () {
+
+      // 获取 getter 函数，这里就是 src/core/instance/lifecycle.js 的 updateComponent
       const value = getter ? getter.call(obj) : val
       if (Dep.target) {
 
@@ -192,6 +194,8 @@ export function defineReactive (
       return value
     },
     set: function reactiveSetter (newVal) {
+
+      // 获取 getter 函数，这里就是 src/core/instance/lifecycle.js 的 updateComponent
       const value = getter ? getter.call(obj) : val
       /* eslint-disable no-self-compare */
       if (newVal === value || (newVal !== newVal && value !== value)) {
@@ -202,6 +206,8 @@ export function defineReactive (
         customSetter()
       }
       if (setter) {
+
+        // 这就是为什么改响应式数据，能够修改视图
         setter.call(obj, newVal)
       } else {
         val = newVal
