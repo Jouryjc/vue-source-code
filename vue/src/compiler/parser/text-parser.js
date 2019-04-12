@@ -3,6 +3,7 @@
 import { cached } from 'shared/util'
 import { parseFilters } from './filter-parser'
 
+// 匹配两个大括号之间的文本，含换行符，捕获文本
 const defaultTagRE = /\{\{((?:.|\n)+?)\}\}/g
 const regexEscapeRE = /[-.*+?^${}()|[\]\/\\]/g
 

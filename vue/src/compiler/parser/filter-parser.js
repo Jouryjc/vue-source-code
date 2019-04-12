@@ -2,17 +2,30 @@
 
 const validDivisionCharRE = /[\w).+\-_$\]]/
 
+/**
+ * 处理text中的filters
+ * @param {String} exp - 字符文本
+ * @return {String} expression - 处理完filters后的函数
+ */
 export function parseFilters (exp: string): string {
+  // 单引号标记
   let inSingle = false
+  // 双引号标记
   let inDouble = false
+  // 模板字符串标记
   let inTemplateString = false
+  // 正则标记
   let inRegex = false
+  // 尖括号
   let curly = 0
+  // 方括号
   let square = 0
+  // 圆括号
   let paren = 0
   let lastFilterIndex = 0
   let c, prev, i, expression, filters
 
+  // 循环文本表达式
   for (i = 0; i < exp.length; i++) {
     prev = c
     c = exp.charCodeAt(i)
@@ -70,17 +83,21 @@ export function parseFilters (exp: string): string {
     pushFilter()
   }
 
+  /**
+   * 将所有filters处理函数推入到filters数组中
+   */
   function pushFilter () {
     (filters || (filters = [])).push(exp.slice(lastFilterIndex, i).trim())
     lastFilterIndex = i + 1
   }
-
+  // 遍历filters所有处理函数，依次包装。转换成_f
   if (filters) {
     for (i = 0; i < filters.length; i++) {
       expression = wrapFilter(expression, filters[i])
     }
   }
 
+  // 有两个filters处理函数生成的表达式 "_f("filtersOverFour")(_f("filtersOdd")(myArr))"
   return expression
 }
 

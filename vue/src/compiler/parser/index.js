@@ -235,8 +235,12 @@ export function parse (
     },
 
     chars (text: string) {
+
+      // 如果没有父节点
       if (!currentParent) {
         if (process.env.NODE_ENV !== 'production') {
+
+          // 只有template时报错
           if (text === template) {
             warnOnce(
               'Component template requires a root element, rather than just text.'

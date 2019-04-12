@@ -186,7 +186,7 @@ function polyfillBind (fn: Function, ctx: Object): Function {
   function boundFn (a) {
     const l = arguments.length
 
-    // 下面对参数长度做了判断，调用不痛的绑定函数
+    // 下面对参数长度做了判断，调用不同的绑定函数
     return l
       ? l > 1
         ? fn.apply(ctx, arguments)  // 通过返回函数修饰了事件的回调函数。绑定了事件回调函数的this。并且让参数自定义。更加的灵活

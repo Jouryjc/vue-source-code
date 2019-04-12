@@ -287,9 +287,15 @@ function createComputedGetter (key) {
 }
 
 function initMethods (vm: Component, methods: Object) {
+
+  // 获取props属性
   const props = vm.$options.props
+
+  // 遍历methods对象的key
   for (const key in methods) {
     if (process.env.NODE_ENV !== 'production') {
+
+      // 函数没有定义
       if (methods[key] == null) {
         warn(
           `Method "${key}" has an undefined value in the component definition. ` +
@@ -297,12 +303,16 @@ function initMethods (vm: Component, methods: Object) {
           vm
         )
       }
+
+      // 函数名和props名称相同
       if (props && hasOwn(props, key)) {
         warn(
           `Method "${key}" has already been defined as a prop.`,
           vm
         )
       }
+
+      // 函数已经存在实例中且以$或_开头，发出警告
       if ((key in vm) && isReserved(key)) {
         warn(
           `Method "${key}" conflicts with an existing Vue instance method. ` +
@@ -310,7 +320,9 @@ function initMethods (vm: Component, methods: Object) {
         )
       }
     }
-    vm[key] = methods[key] == null ? noop : bind(methods[key], vm)  // 调用bind，传方法和作用域
+
+    // 调用bind，传方法和作用域
+    vm[key] = methods[key] == null ? noop : bind(methods[key], vm)  
   }
 }
 

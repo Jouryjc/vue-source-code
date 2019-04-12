@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FILTERS-VS-METHODS</title>       
+    <script src="../../dist/vue.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        {{ myArr | filtersOdd | filtersOverFour }}
+    </div>
+    <script>
+        new Vue({
+            el: '#app',
+
+            data: function () {
+                return {
+                    myArr: [1,2,3,4,5,6,7,8,9,10]
+                };
+            },
+
+            filters: {
+                filtersOdd: function (arr) {
+                    return arr.filter(item => !(item % 2));
+                },
+
+                filtersOverFour: function (v) {
+                    return v.filter(item => item > 4);
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>
