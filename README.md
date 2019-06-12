@@ -1,6 +1,4 @@
-# vue-source-code
-
-> 分析vue实现原理
+# Vue 源码分析
 
 - [computed的原理](https://github.com/Jouryjc/blog/issues/20)
 - [watch的原理](https://github.com/Jouryjc/blog/issues/30)
@@ -10,3 +8,5 @@
 - [响应式原理分析](https://github.com/Jouryjc/blog/issues/27)
 - [依赖收集原理](https://github.com/Jouryjc/blog/issues/28)
 - [派发更新原理](https://github.com/Jouryjc/blog/issues/29)
+- [模板编译入口分析](https://github.com/Jouryjc/blog/issues/33)
+- [为什么 filter 里的 this 绑定的不是 Vue ？](https://github.com/Jouryjc/blog/issues/42)
