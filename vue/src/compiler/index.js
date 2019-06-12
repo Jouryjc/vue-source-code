@@ -12,7 +12,6 @@ export const createCompiler = createCompilerCreator(function baseCompile (
   template: string,
   options: CompilerOptions
 ): CompiledResult {
-  debugger
   // 编译生成AST
   const ast = parse(template.trim(), options)
 
