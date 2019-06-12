@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>V-bind</title>
+    <script src="../../dist/vue.js"></script>
+</head>
+<body>
+    <div id="app">
+        <label for="name">姓名：</label>
+        <input id="name" type="text" v-bind:disabled="nameDisabled" />
+        <label for="age">年龄：</label>
+        <input id="age" type="text" v-bind:disabled="ageDisabled" />
+        <label for="sex">性别：</label>
+        <input id="sex" type="text" v-bind:disabled="sexDisabled" />
+    </div>
+    <script>
+        new Vue({
+            el: '#app',
+
+            data: function () {
+                return {
+                    nameDisabled: false,
+                    ageDisabled: true,
+                    sexDisabled: 'disabled'
+                };
+            }
+        });
+    </script>
+</body>
+</html>
