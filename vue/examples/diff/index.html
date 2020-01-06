@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>VNODE-DIFF</title>       
+    <script src="../../dist/vue.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <ul>
+            <li v-for="item of myArr" :key="item.id">
+                {{ item.text }}
+            </li>
+        </ul>
+        <button @click="change">toggle</button>
+    </div>
+    <script>
+        new Vue({
+            el: '#app',
+
+            data: function () {
+                return {
+                    myArr: [{
+                        id: 1,
+                        text: 'a'
+                    }, {
+                        id: 2,
+                        text: 'b'
+                    }, {
+                        id: 3,
+                        text: 'c'
+                    }, {
+                        id: 4,
+                        text: 'd'
+                    }]
+                };
+            },
+
+            methods: {
+                change () {
+                    this.myArr.splice(1, 1, {
+                        id: 5,
+                        text: 'e'
+                    });
+
+                    this.myArr = this.myArr.reverse();
+                }
+            }
+        })
+    </script>
+</body>
+</html>

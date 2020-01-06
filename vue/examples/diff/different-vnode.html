@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>DIFFERENT-TAG-VNODE-DIFF</title>       
+    <script src="../../dist/vue.js"></script>
+    <style>
+        .red {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <Child :has-changed="hasChanged"></Child>
+        <button @click="change">toggle</button>
+    </div>
+
+    <script type="text/x-template" id="Child">
+        
+            <div v-if="hasChanged">Hello, Vue</div>
+            <p v-else>
+                <span class="red">Hello, Jour</span>
+            </p>
+        
+    </script>
+
+    <script>
+        Vue.component('Child', {
+            props: ['hasChanged'],
+               
+            template: '#Child'
+        });
+
+        new Vue({
+            el: '#app',
+
+            name: 'App',
+
+            Components: {
+                Child
+            },
+
+            data: function () {
+                return {
+                    hasChanged: true
+                };
+            },
+
+            methods: {
+                change () {
+                    this.hasChanged = !this.hasChanged;
+                }
+            }
+        })
+    </script>
+</body>
+</html>

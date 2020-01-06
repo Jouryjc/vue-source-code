@@ -573,13 +573,23 @@ export function createPatchFunction (backend) {
       if (isDef(i = data.hook) && isDef(i = i.update)) i(oldVnode, vnode)
     }
     if (isUndef(vnode.text)) {
+
+      // 1. 同时存在新、老孩子节点，执行updateChildren
       if (isDef(oldCh) && isDef(ch)) {
         if (oldCh !== ch) updateChildren(elm, oldCh, ch, insertedVnodeQueue, removeOnly)
+      
+      // 2. 只存在新的孩子节点
       } else if (isDef(ch)) {
+        // 2.1. 存在旧的文本孩子节点，将文本清空
         if (isDef(oldVnode.text)) nodeOps.setTextContent(elm, '')
+        // 2.2. 创建新的孩子节点
         addVnodes(elm, null, ch, 0, ch.length - 1, insertedVnodeQueue)
+
+      // 3. 只存在旧的孩子节点，直接删除
       } else if (isDef(oldCh)) {
         removeVnodes(elm, oldCh, 0, oldCh.length - 1)
+
+      // 4. 只存在旧的文本孩子节点，将文本清空
       } else if (isDef(oldVnode.text)) {
         nodeOps.setTextContent(elm, '')
       }
@@ -587,6 +597,8 @@ export function createPatchFunction (backend) {
       nodeOps.setTextContent(elm, vnode.text)
     }
     if (isDef(data)) {
+
+      // 执行postpatch钩子
       if (isDef(i = data.hook) && isDef(i = i.postpatch)) i(oldVnode, vnode)
     }
   }
@@ -770,6 +782,7 @@ export function createPatchFunction (backend) {
         const parentElm = nodeOps.parentNode(oldElm)
 
         // create new node
+        // 创建新节点
         createElm(
           vnode,
           insertedVnodeQueue,
@@ -781,6 +794,7 @@ export function createPatchFunction (backend) {
         )
 
         // update parent placeholder node element, recursively
+        // 递归更新父占位节点
         if (isDef(vnode.parent)) {
           let ancestor = vnode.parent
           const patchable = isPatchable(vnode)
@@ -811,6 +825,7 @@ export function createPatchFunction (backend) {
         }
 
         // destroy old node
+        // 删除旧节点
         if (isDef(parentElm)) {
           removeVnodes(parentElm, [oldVnode], 0, 0)
         } else if (isDef(oldVnode.tag)) {
